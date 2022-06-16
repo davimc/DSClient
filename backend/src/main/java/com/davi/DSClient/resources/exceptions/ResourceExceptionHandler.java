@@ -1,5 +1,6 @@
 package com.davi.DSClient.resources.exceptions;
 
+import com.davi.DSClient.services.exceptions.DatabaseException;
 import com.davi.DSClient.services.exceptions.ObjectNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.HttpStatus;
@@ -20,6 +21,19 @@ public class ResourceExceptionHandler {
         err.setMessage(e.getMessage());
         err.setStatus(status.value());
         err.setError("Object not found");
+        err.setPath(request.getRequestURI());
+
+        return ResponseEntity.status(status).body(err);
+    }
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<StandardError> database(DatabaseException e, HttpServletRequest request) {
+        HttpStatus status = HttpStatus.BAD_REQUEST;
+
+        StandardError err = new StandardError();
+        err.setTimeStamp(Instant.now());
+        err.setMessage(e.getMessage());
+        err.setStatus(status.value());
+        err.setError("Database exception");
         err.setPath(request.getRequestURI());
 
         return ResponseEntity.status(status).body(err);
